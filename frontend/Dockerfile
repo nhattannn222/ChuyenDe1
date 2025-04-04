@@ -2,10 +2,10 @@
 FROM nginx:alpine
 
 # Sao chép các file build frontend (React) vào thư mục phục vụ của Nginx
-COPY ./frontend /usr/share/nginx/html
+COPY . /usr/share/nginx/html
 
 # Sao chép file cấu hình template của Nginx vào thư mục template
-COPY ./frontend/default.conf.template /etc/nginx/templates/default.conf.template
+COPY ./default.conf.template /etc/nginx/templates/default.conf.template
 
 # Cài đặt envsubst để thay thế các biến môi trường trong file cấu hình Nginx
 RUN apk add --no-cache gettext
