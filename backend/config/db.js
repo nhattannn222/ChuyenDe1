@@ -34,7 +34,7 @@ db.connect(err => {
     console.log('Đã kết nối đến MySQL');
 
     // Đảm bảo thực thi script SQL sau khi kết nối thành công
-    executeSQLScript('./database/init.sql'); // Đường dẫn đến tệp SQL
+    //executeSQLScript('./database/init.sql'); // Đường dẫn đến tệp SQL
 });
 
 module.exports = db;
