@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin sinh viên</title>
+    <style>
+        /* Styling remains the same as your original code */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #0056b3;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        header button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        header button:hover {
+            background-color: #e60000;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #0056b3;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th,
+        table td {
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        footer {
+            background-color: #0056b3;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Thông tin sinh viên</h1>
+        <button id="logout-btn">Đăng xuất</button>
+    </header>
+    <main>
+        <div class="loading" id="loading">Đang tải dữ liệu...</div>
+        <div id="student-info" style="display: none;">
+            <h2>Thông tin cá nhân</h2>
+            <table>
+                <tbody id="personal-info"></tbody>
+            </table>
+
+            <h2>Thông tin khóa học</h2>
+            <table>
+                <tbody id="course-info"></tbody>
+            </table>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Trường Đại học Bình Dương - Chi nhánh Bến Cát. Mọi quyền được bảo lưu.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loading = document.getElementById('loading');
+            const studentInfoDiv = document.getElementById('student-info');
+            const personalInfoTable = document.getElementById('personal-info');
+            const courseInfoTable = document.getElementById('course-info');
+
+            // Replace with the actual API URL
+            const apiEndpoint = `/api/students/22050101`;
+
+            // Fetch student data from API
+            fetch(apiEndpoint, { method: 'GET' })
+                .then(response => {
+                    if (!response.ok) throw new Error('Không thể kết nối đến máy chủ.');
+                    return response.json();
+                })
+                .then(data => {
+                    const student = data.student;
+
+                    // Render personal information
+                    personalInfoTable.innerHTML = `
+                        <tr><th>Mã SV</th><td>${student.ma_sv}</td></tr>
+                        <tr><th>Họ và tên</th><td>${student.ho_ten}</td></tr>
+                        <tr><th>Ngày sinh</th><td>${new Date(student.ngay_sinh).toLocaleDateString()}</td></tr>
+                        <tr><th>Giới tính</th><td>${student.gioi_tinh}</td></tr>
+                        <tr><th>Điện thoại</th><td>${student.dien_thoai}</td></tr>
+                        <tr><th>Số CMND/CCCD</th><td>${student.cccd}</td></tr>
+                        <tr><th>Email</th><td>${student.email}</td></tr>
+                        <tr><th>Email 2</th><td>${student.email_phu}</td></tr>
+                        <tr><th>Nơi sinh</th><td>${student.noi_sinh}</td></tr>
+                        <tr><th>Dân tộc</th><td>${student.dan_toc}</td></tr>
+                        <tr><th>Tôn giáo</th><td>${student.ton_giao}</td></tr>
+                        <tr><th>Hiện diện</th><td>${student.hien_dien}</td></tr>
+                        <tr><th>Hộ khẩu</th><td>${student.ho_khau}</td></tr>
+                    `;
+
+                    // Render course and advisor information
+                    courseInfoTable.innerHTML = `
+                        ${student.courses.map(course => `
+                            <tr><th>Lớp</th><td>${course.lop}</td></tr>
+                            <tr><th>Ngành</th><td>${course.nganh}</td></tr>
+                            <tr><th>Chuyên ngành</th><td>${course.chuyen_nganh}</td></tr>
+                            <tr><th>Khoa</th><td>${course.khoa}</td></tr>
+                            <tr><th>Bậc hệ đào tạo</th><td>${course.he_dao_tao}</td></tr>
+                            <tr><th>Niên khóa</th><td>${course.nien_khoa}</td></tr>
+                        `).join('')}
+                        <tr>
+                            <th>Cố vấn học tập</th>
+                            <td>
+                                <strong>Tài khoản:</strong> ${student.co_van_id}<br>
+                                <strong>Họ và tên:</strong> ${student.advisor_name}
+                            </td>
+                        </tr>
+                    `;
+
+                    // Display the data and hide the loading message
+                    studentInfoDiv.style.display = 'block';
+                    loading.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loading.textContent = 'Không thể tải dữ liệu. Vui lòng thử lại sau.';
+                });
+
+            // Logout button functionality
+            const logoutBtn = document.getElementById('logout-btn');
+            logoutBtn.addEventListener('click', () => {
+                if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
