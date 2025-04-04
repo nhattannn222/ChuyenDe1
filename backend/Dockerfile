@@ -1,17 +1,20 @@
-# Use official Node.js image as a base image
+# Use official Node.js image based on Alpine Linux
 FROM node:16-alpine
 
-# Set the working directory for the backend code
+# Set the working directory
 WORKDIR /usr/src/app
 
-# Copy the backend code into the container
-COPY ./backend /usr/src/app
+# Install mysql-client using Alpine's package manager (apk)
+RUN apk add --no-cache mysql-client
 
-# Install dependencies (assuming you have a package.json)
+# Copy backend code into container
+COPY . /usr/src/app
+
+# Install Node.js dependencies
 RUN npm install
 
-# Expose port for the backend (e.g., 3000 for a Node.js app)
+# Expose port 3000
 EXPOSE 3000
 
-# Command to start the backend service
+# Start the backend service
 CMD ["npm", "start"]
